@@ -18,6 +18,9 @@ urlpatterns = [
     path("Partners/", include('Partners.urls')),
     path("Vacations/", include('Vacations.urls')),
     path("Contract/", include('contract.urls')),
+    path("Job/", include('Jobs.urls')),
+    path("Worker/", include('Workers.urls')),
+    path("Calendar/", include('Calendar.urls')),
 
     path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

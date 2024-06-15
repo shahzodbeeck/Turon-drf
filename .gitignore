@@ -9,3 +9,6 @@ Students/migrations
 Teachers/migrations
 Users/migrations
 Vacations/migrations
+Workers/migrations
+Calendar/migrations
+__pycache__
