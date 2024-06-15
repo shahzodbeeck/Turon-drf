@@ -1,0 +1,11 @@
+.idea
+Class/migrations
+contract/migrations
+Flow/migrations
+Galery/migrations
+Partners/migrations
+Rooms/migrations
+Students/migrations
+Teachers/migrations
+Users/migrations
+Vacations/migrations
