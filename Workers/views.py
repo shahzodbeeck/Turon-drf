@@ -1,15 +1,13 @@
 from django.utils import timezone
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, generics
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from Jobs.serializers import JobSerializers
 from turon.permission import IsAdminOrReadOnly
-from .models import Worker, WorkerSalary, WorkerSalaryInDay, DeletedWorkerSalaryInDay, Job, CustomUser, Day, Years, \
-    Month, AccountType
-from .serializers import WorkerSerializer, WorkerSalarySerializer, WorkerSalaryInDaySerializer, \
-    DeletedWorkerSalaryInDaySerializer, AccountTypeSerializer
+from .models import Worker, WorkerSalary, WorkerSalaryInDay, DeletedWorkerSalaryInDay, Job, CustomUser, Day, Years, Month, AccountType
+from .serializers import WorkerSerializer, WorkerSalarySerializer, WorkerSalaryInDaySerializer, DeletedWorkerSalaryInDaySerializer, AccountTypeSerializer
 
 
 class AccountTypeViewSet(viewsets.ModelViewSet):
@@ -42,10 +40,10 @@ class DeletedWorkerSalaryInDayViewSet(viewsets.ModelViewSet):
     serializer_class = DeletedWorkerSalaryInDaySerializer
 
 
-class GetWorkerSalary(APIView):
+class GetWorkerSalaryView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         today = timezone.now()
         year = Years.objects.filter(year=today.year).first()
         month = Month.objects.filter(month_number=today.month, year=year).first()
@@ -58,46 +56,46 @@ class GetWorkerSalary(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class WorkerListView(APIView):
+class WorkerListView(generics.ListAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    queryset = Worker.objects.all()
+    serializer_class = WorkerSerializer
 
-    def get(self, request):
-        GetWorkerSalary().get(request)
-        workers = Worker.objects.all()
-        serializer = WorkerSerializer(workers, many=True)
+    def get(self, request, *args, **kwargs):
+        GetWorkerSalaryView().get(request)
+        return super().get(request, *args, **kwargs)
+
+
+class WorkerProfileView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    queryset = Worker.objects.all()
+    serializer_class = WorkerSerializer
+    lookup_field = 'id'
+
+    def get(self, request, *args, **kwargs):
+        worker = self.get_object()
+        serializer = self.get_serializer(worker)
         return Response(serializer.data)
 
 
-class WorkerProfileView(APIView):
+class WorkerSalaryDetailView(generics.ListAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    serializer_class = WorkerSalarySerializer
+
+    def get_queryset(self):
+        worker_id = self.kwargs['worker_id']
+        return WorkerSalary.objects.filter(worker_id=worker_id).order_by('id')
+
+
+class WorkerSalariesInMonthView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
 
-    def get(self, request, worker_id):
-        worker = Worker.objects.filter(id=worker_id).first()
-        if not worker:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = WorkerSerializer(worker)
-        return Response(serializer.data)
-
-
-class WorkerSalaryDetailView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
-
-    def get(self, request, worker_id):
-        worker_salaries = WorkerSalary.objects.filter(worker_id=worker_id).order_by('id')
-        serializer = WorkerSalarySerializer(worker_salaries, many=True)
-        return Response(serializer.data)
-
-
-class WorkerSalariesInMonthView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
-
-    def get(self, request, worker_salary_id):
+    def get(self, request, worker_salary_id, *args, **kwargs):
         worker_salary = WorkerSalary.objects.filter(id=worker_salary_id).first()
         if not worker_salary:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        worker_salaries_in_day = WorkerSalaryInDay.objects.filter(
-            worker_salary=worker_salary, deleted_worker_salary_in_day__isnull=True
-        ).order_by('id')
+        worker_salaries_in_day = WorkerSalaryInDay.objects.filter(worker_salary=worker_salary,
+                                                                  deleted_worker_salary_in_day__isnull=True).order_by('id')
         serializer = WorkerSalaryInDaySerializer(worker_salaries_in_day, many=True)
         return Response({
             'worker_salary': WorkerSalarySerializer(worker_salary).data,
@@ -106,10 +104,10 @@ class WorkerSalariesInMonthView(APIView):
         })
 
 
-class ChangeWorkerSalaryAccountTypeView(APIView):
+class ChangeWorkerSalaryAccountTypeView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         info = request.data.get('info')
         worker_salary_in_day_id = info['worker_salary_in_day_id']
         account_type_id = info['account_type_id']
@@ -117,10 +115,10 @@ class ChangeWorkerSalaryAccountTypeView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class GivenWorkerSalaryView(APIView):
+class GivenWorkerSalaryView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         info = request.data.get('info')
         worker_salary_id = info['worker_salary_id']
         account_type_id = info['account_type_id']
@@ -147,10 +145,10 @@ class GivenWorkerSalaryView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class SetWorkerSalaryView(APIView):
+class SetWorkerSalaryView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         info = request.data.get('info')
         worker_id = info['worker_id']
         salary = info['new_salary_money']
@@ -158,10 +156,10 @@ class SetWorkerSalaryView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class DeleteWorkerGivenSalaryView(APIView):
+class DeleteWorkerGivenSalaryView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         info = request.data.get('info')
         given_salary_id = info['given_salary_id']
         today = timezone.now()
@@ -177,10 +175,10 @@ class DeleteWorkerGivenSalaryView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class RegisterWorkerView(APIView):
+class RegisterWorkerView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         user_data = {
             'username': request.data.get('username'),
             'password': request.data.get('password'),
@@ -196,6 +194,6 @@ class RegisterWorkerView(APIView):
         Worker.objects.create(**worker_data)
         return Response(status=status.HTTP_201_CREATED)
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         jobs = Job.objects.all()
         return Response({'jobs': JobSerializers(jobs, many=True).data})
