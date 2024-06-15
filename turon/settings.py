@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "Subjects.apps.SubjectsConfig",
     "Teachers.apps.TeachersConfig",
     'Rooms.apps.RoomsConfig',
+    'contract.apps.ContractConfig',
     'Class.apps.ClassConfig',
     'Students.apps.StudentsConfig',
     'Flow.apps.FlowConfig',
