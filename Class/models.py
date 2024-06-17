@@ -2,7 +2,6 @@ from django.db import models
 
 from Teachers.models import Teacher
 
-
 class ClassType(models.Model):
     class_number = models.IntegerField()
     color = models.CharField(max_length=255)
@@ -17,3 +16,7 @@ class Class(models.Model):
     def __str__(self):
         return self.name
     # language_type = models.ForeignKey('Language', on_delete=models.CASCADE)
+
+
+class DeletedClasses(models.Model):
+    class_instance = models.ForeignKey(Class, on_delete=models.CASCADE)

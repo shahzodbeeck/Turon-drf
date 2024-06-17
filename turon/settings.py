@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'Jobs.apps.JobsConfig',
     'Workers.apps.WorkersConfig',
     'Calendar.apps.CalendarConfig',
-
+    'about_us_jobs.apps.AboutUsJobsConfig',  # Use the correct AppConfig class path
     'Class.apps.ClassConfig',
     'Students.apps.StudentsConfig',
     'Flow.apps.FlowConfig',

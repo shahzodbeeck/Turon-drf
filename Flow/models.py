@@ -17,7 +17,8 @@ class Flow(models.Model):
 
 
 
-
+class LanguageType(models.Model):
+    name = models.CharField(max_length=100)
 
 
 

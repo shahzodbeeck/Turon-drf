@@ -1,9 +1,7 @@
 from django.utils import timezone
 from rest_framework import status, viewsets, generics
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-
 from Jobs.serializers import JobSerializers
 from turon.permission import IsAdminOrReadOnly
 from .models import Worker, WorkerSalary, WorkerSalaryInDay, DeletedWorkerSalaryInDay, Job, CustomUser, Day, Years, Month, AccountType
@@ -42,6 +40,7 @@ class DeletedWorkerSalaryInDayViewSet(viewsets.ModelViewSet):
 
 class GetWorkerSalaryView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    serializer_class = WorkerSalarySerializer  # Adding this line
 
     def get(self, request, *args, **kwargs):
         today = timezone.now()
@@ -89,13 +88,13 @@ class WorkerSalaryDetailView(generics.ListAPIView):
 
 class WorkerSalariesInMonthView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    serializer_class = WorkerSalaryInDaySerializer  # Adding this line
 
     def get(self, request, worker_salary_id, *args, **kwargs):
         worker_salary = WorkerSalary.objects.filter(id=worker_salary_id).first()
         if not worker_salary:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        worker_salaries_in_day = WorkerSalaryInDay.objects.filter(worker_salary=worker_salary,
-                                                                  deleted_worker_salary_in_day__isnull=True).order_by('id')
+        worker_salaries_in_day = WorkerSalaryInDay.objects.filter(worker_salary=worker_salary, deleted_worker_salary_in_day__isnull=True).order_by('id')
         serializer = WorkerSalaryInDaySerializer(worker_salaries_in_day, many=True)
         return Response({
             'worker_salary': WorkerSalarySerializer(worker_salary).data,
@@ -106,6 +105,7 @@ class WorkerSalariesInMonthView(generics.GenericAPIView):
 
 class ChangeWorkerSalaryAccountTypeView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    serializer_class = WorkerSalaryInDaySerializer  # Adding this line
 
     def post(self, request, *args, **kwargs):
         info = request.data.get('info')
@@ -117,6 +117,7 @@ class ChangeWorkerSalaryAccountTypeView(generics.GenericAPIView):
 
 class GivenWorkerSalaryView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    serializer_class = WorkerSalaryInDaySerializer  # Adding this line
 
     def post(self, request, *args, **kwargs):
         info = request.data.get('info')
@@ -147,6 +148,7 @@ class GivenWorkerSalaryView(generics.GenericAPIView):
 
 class SetWorkerSalaryView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    serializer_class = WorkerSalarySerializer  # Adding this line
 
     def post(self, request, *args, **kwargs):
         info = request.data.get('info')
@@ -158,6 +160,7 @@ class SetWorkerSalaryView(generics.GenericAPIView):
 
 class DeleteWorkerGivenSalaryView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    serializer_class = DeletedWorkerSalaryInDaySerializer  # Adding this line
 
     def post(self, request, *args, **kwargs):
         info = request.data.get('info')
@@ -177,6 +180,7 @@ class DeleteWorkerGivenSalaryView(generics.GenericAPIView):
 
 class RegisterWorkerView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    serializer_class = WorkerSerializer  # Adding this line
 
     def post(self, request, *args, **kwargs):
         user_data = {

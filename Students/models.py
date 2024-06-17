@@ -1,7 +1,6 @@
 from django.conf import settings
-from django.db import models
 
-from Class.models import Class
+from Class.models import *
 
 
 class Students(models.Model):
@@ -10,3 +9,14 @@ class Students(models.Model):
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
+
+
+class DeletedStudent(models.Model):
+    student = models.ForeignKey(Students, on_delete=models.CASCADE)
+    reason = models.CharField(max_length=255)
+
+
+class DeletedStudentForClasses(models.Model):
+    student = models.ForeignKey(Students, on_delete=models.CASCADE)
+    class_instance = models.ForeignKey(Class, on_delete=models.CASCADE)
+    reason = models.CharField(max_length=255)
