@@ -1,9 +1,6 @@
 from rest_framework import serializers
 
-from Subjects.serializers import SubjectSerializer, Subjects
-from Users.models import CustomUser
-from Users.serializers import CustomUserSerializer
-from .models import Teacher
+from .models import *
 
 
 class RegisterTeacherSerializer(serializers.Serializer):
@@ -30,9 +27,30 @@ class RegisterTeacherSerializer(serializers.Serializer):
 
 
 class TeacherSerializer(serializers.ModelSerializer):
-    user = CustomUserSerializer()
-    subject = SubjectSerializer()
-
     class Meta:
         model = Teacher
-        fields = ['id', 'user', 'subject']
+        fields = '__all__'
+
+
+class TeacherSalaryTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeacherSalaryType
+        fields = '__all__'
+
+
+class TeacherSalarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeacherSalary
+        fields = '__all__'
+
+
+class TeacherAttendanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeacherAttendance
+        fields = '__all__'
+
+
+class GivenSalariesInMonthSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GivenSalariesInMonth
+        fields = '__all__'

@@ -25,6 +25,9 @@ urlpatterns = [
     path('Student/', include('Students.urls')),
     path('Subjects/', include('Subjects.urls')),
     path('Teachers/', include('Teachers.urls')),
+    path('timetable/', include('timetable.urls')),
+    path('lesson_plan/', include('Lesson_plan.urls')),
+
     path('Vacations/', include('Vacations.urls')),
     path('Worker/', include('Workers.urls')),
 ]

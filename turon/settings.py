@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'about_us_jobs.apps.AboutUsJobsConfig',  # Use the correct AppConfig class path
     'Class.apps.ClassConfig',
     'base_rout.apps.BaseRoutConfig',
+    'timetable.apps.TimetableConfig',
+    'Lesson_plan.apps.LessonPlanConfig',
     'Students.apps.StudentsConfig',
     'Flow.apps.FlowConfig',
     'Galery.apps.GaleryConfig',
