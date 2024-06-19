@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'timetable.apps.TimetableConfig',
     'Lesson_plan.apps.LessonPlanConfig',
     'Students.apps.StudentsConfig',
+    'account.apps.AccountConfig',
     'Flow.apps.FlowConfig',
     'Galery.apps.GaleryConfig',
     'Partners.apps.PartnersConfig',
