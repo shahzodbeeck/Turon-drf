@@ -5,8 +5,7 @@ from Class.models import Class
 from Class.serializers import ClassSerializer
 from Users.models import CustomUser
 from Users.serializers import CustomUserSerializer
-from .models import Students
-
+from .models import Students,DeletedStudent,PdfContract
 
 class RegisterStudentSerializer(serializers.Serializer):
     user_id = serializers.CharField()
@@ -40,3 +39,11 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Students
         fields = ['id', 'user', 'classs']
+class DeletedStudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeletedStudent
+        fields = '__all__'
+class PdfContractSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PdfContract
+        fields = '__all__'
